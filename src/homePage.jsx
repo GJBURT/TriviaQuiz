@@ -16,7 +16,7 @@ const HomePage = () => {
             {/* Form Creation */}
             <form onSubmit={handleSubmit}>
                 <label>
-                    Name:
+                    Enter Your Name:
                     <input
                         type="text"
                         value={name}
@@ -25,7 +25,7 @@ const HomePage = () => {
                     />
                 </label>
                 <label>
-                    Category:
+                    Select a Trivia Category:
                     <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
@@ -35,7 +35,7 @@ const HomePage = () => {
                     </select>
                 </label>
                 <label>
-                    Difficulty:
+                    Select a Difficulty:
                     <select
                         value={difficulty}
                         onChange={(e) => setDifficulty(e.target.value)}

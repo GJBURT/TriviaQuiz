@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import HomePage from './homePage.jsx';
+import HomePage from './HomePage.jsx';
 
 const App = () => {
   return (
