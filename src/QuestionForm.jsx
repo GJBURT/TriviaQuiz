@@ -1,31 +1,44 @@
 import React, { useState, useEffect } from 'react';
 
-const QuestionForm = () => {
+const QuestionForm = ({category, difficulty}) => {
     // Setting up variables for Questions, Loading, and Errors
     const [questions, setQuestions] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-
+    
     // Fetching data from the API
     useEffect(() => {
-        fetch('https://opentdb.com/api.php?amount=10&type=multiple')
-            // Converting the response to json
-            .then((response) => response.json())
-            .then((data) => {
-                // Save the result to a state for the Questions
-                setQuestions(data.results); 
-                // Making the Loading indicator stop
-                setLoading(false);
-            })
-            .catch((error) => {
-                // Setting any errors to be saved to a state of Error
-                setError(error);
-                // Stops the Loading indicator when an error occurs
-                setLoading(false);
-            });
-    },
-    // Empty array set for the API call to happen once the component runs 
-    []);
+        // Making sure there are valid inputs
+        if (!category || !difficulty) return;
+
+        const fetchQuestions = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                    console.log("Fetching questions...");
+                    // Adding a 1 second delay before the API request
+                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                    const response = await fetch(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple`);
+                        // Converting the response to json
+                        if (!response.ok) {
+                            throw new Error (`HTTP error! Status: ${response.status}`);
+                        }
+                        const data = await response.json();
+                        // Save the result to a state for the Questions
+                        setQuestions(data.results);
+                    }
+                    catch (error) {
+                        console.error("Error fetching data:", error); 
+                        // Setting any errors to be saved to a state of Error
+                        setError(error);
+                    }   
+                    finally {
+                        // Stops the Loading indicator when an error occurs
+                        setLoading(false);
+                }
+        };
+        fetchQuestions();
+    }, [category, difficulty]);
 
     // Sets the loading message when loading
     if (loading) {
@@ -36,6 +49,11 @@ const QuestionForm = () => {
     if (error) {
         return <p>Error loading questions: {error.message}</p>;
     } 
+
+    // Ensuring there are questions
+    if (!questions || questions.length === 0) {
+        return <p>No questions available.</p>;
+    }
 
     // Setting up successful return of Questions
     return (
