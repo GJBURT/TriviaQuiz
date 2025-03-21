@@ -11,7 +11,7 @@ const HomePage = () => {
     const [categories, setCategories] = useState([]);
     // Sets the initial state of the form submission to be false
     const [formSubmitted, setFormSubmitted] = useState(false);
-
+    
     // Fetching data from the API for categories data
     useEffect(() => {
         const fetchCategories = async () => {
@@ -24,8 +24,11 @@ const HomePage = () => {
                     console.error('Error fetching categories:', error);
                 }
         };
-
-        fetchCategories();
+        
+        if (!formSubmitted){
+            fetchCategories();
+        }
+        
     }, []);
     
     // Submit Handling

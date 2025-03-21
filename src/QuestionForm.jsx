@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import axios from "axios"; 
 
 const QuestionForm = ({category, difficulty}) => {
     // Setting up variables for Questions, Loading, and Errors
@@ -8,54 +9,26 @@ const QuestionForm = ({category, difficulty}) => {
     // Trying to prevent duplicate API calls that is causing app to crash
     const hasFetched = useRef(false);
     
+    
+    
     // Fetching data from the API
-    useEffect(() => {
-        // log for debugging
-        console.log("Category:", category, "Difficulty:", difficulty);
-        // Making sure there are valid inputs
-        if (!category || !difficulty) return;
-
-        let isMounted = true; 
-
-        const fetchQuestions = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-                    console.log("Fetching questions...");
-                    // Adding a 1 second delay before the API request
-                    await new Promise((resolve) => setTimeout(resolve, 2500));
-                    const response = await fetch(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple`);
-                        // Converting the response to json
-                        if (!response.ok) {
-                            throw new Error (`HTTP error! Status: ${response.status}`);
-                        }
-                        const data = await response.json();
-                        // log for debugging
-                        console.log("Fetched data:", data);
-
-                        // Save the result to a state for the Questions
-                        if (isMounted) {
-                            setQuestions(data.results);
-                            hasFetched.current = true; }
-                    }
-                    catch (error) {
-                        console.error("Error fetching data:", error); 
-                        // Setting any errors to be saved to a state of Error
-                        if (isMounted) {
-                            setError(error); }
-                    }   
-                    finally {
-                        // Stops the Loading indicator when an error occurs
-                        if (isMounted) {
-                            setLoading(false); }
-                }
-        };
-        fetchQuestions();
-
-        return () => {
-            isMounted = false;
+    const fetchQuestions = async () => {
+        try {
+            const response = await axios.get(`https://opentdb.com/api.php?amount=10&category=${category}&difficulty=${difficulty}&type=multiple`)
+            console.log(response)
+            setQuestions(response.data.results)
+        } catch (e) {
+            console.log(e)
+            setError(e)
+        } finally {
+            setLoading(false)
         }
-    }, [category, difficulty]);
+    }
+
+    useEffect(()=>{
+        fetchQuestions(); 
+    }, [category, difficulty])
+
 
     // Sets the loading message when loading
     if (loading) {
