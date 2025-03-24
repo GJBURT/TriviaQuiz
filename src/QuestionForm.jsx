@@ -1,16 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from "axios"; 
+import Results from "./Results";
 
-const QuestionForm = ({category, difficulty}) => {
+const QuestionForm = ({category, difficulty, name}) => {
     // Setting up variables for Questions, Loading, and Errors
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    // Trying to prevent duplicate API calls that is causing app to crash
-    const hasFetched = useRef(false);
+    const [selectedAnswers, setSelectedAnswers] = useState({});
+    const [showResults, setShowResults] = useState(false);
     
+    const handleAnswerChange = (questionIndex, answer) => {
+        setSelectedAnswers((prev) => ({
+            ...prev, [questionIndex]: answer,
+        }));
+    };
+    const handleSubmit = () => {
+        console.log("Submitted Answers:", selectedAnswers);
+        setShowResults(true);
+    };
     
-    
+
     // Fetching data from the API
     const fetchQuestions = async () => {
         try {
@@ -48,16 +58,33 @@ const QuestionForm = ({category, difficulty}) => {
     // Setting up successful return of Questions
     return (
         <div>
-            <h2>Trivia Questions</h2>
-            {questions.map((question, index) => (
-                <div key={index}>
-                    <p>{question.question}</p><ul>
-                        {question.incorrect_answers.concat(question.correct_answer).map((answer, index) => (
-                            <li key={index}>{answer}</li>
-                        ))}
-                    </ul>
-                </div>
-            ))}
+            {!showResults ? (
+                <>
+                <h2>{name}'s Trivia Questions</h2>
+                {questions.map((question, questionIndex) => (
+                    <div key={questionIndex}>
+                        <p>{question.question}</p><ul>
+                            {question.incorrect_answers.concat(question.correct_answer).map((answer, answerIndex) => (
+                                <li key={answerIndex}>
+                                    <input
+                                        type="radio"
+                                        name={`question-${questionIndex}`}
+                                        value={answer}
+                                        id={`answer-${questionIndex}-${answerIndex}`}
+                                        onChange={() => handleAnswerChange(questionIndex, answer)}
+                                    />
+                                    <label htmlFor={`answer-${questionIndex}-${answerIndex}`}>{answer}</label>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
+                {/* Submit button for submitting all of the answers at once */}
+                <button onClick={handleSubmit}>Submit</button>
+                </> 
+            ) : (
+                <Results selectedAnswers={selectedAnswers} questions={questions} name={name} />)}
+                
         </div>
     );
 };

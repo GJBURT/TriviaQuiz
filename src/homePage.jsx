@@ -61,7 +61,7 @@ const HomePage = () => {
                         onChange={(e) => setName(e.target.value)}
                         required
                     />
-                    <select value={category} onChange={(e) => setCategory(e.target.value)}>
+                    <select value={category} onChange={(e) => setCategory(e.target.value)} required>
                         <option value="">Select a Trivia Category</option>
                         {categories.map((cat) => (
                             <option key={cat.id} value={cat.id}>
@@ -69,7 +69,7 @@ const HomePage = () => {
                             </option>
                         ))}
                     </select>
-                    <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
+                    <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} required>
                         <option value="">Select a Difficulty</option>
                         <option value="easy">Easy</option>
                         <option value="medium">Medium</option>
@@ -79,7 +79,7 @@ const HomePage = () => {
                 </form>
             ) : (
                 // Creation of Question Form when the form is submitted
-                <QuestionForm category={category} difficulty={difficulty} />
+                <QuestionForm category={category} difficulty={difficulty} name={name}/>
             )}
         </div>
     );
